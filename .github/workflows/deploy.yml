@@ -1,0 +1,21 @@
+name: Deploy
+on:
+    repository_dispatch:
+        types: [deploy]
+    workflow_dispatch:
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Deploy over SSH
+              uses: appleboy/ssh-action@v1
+              with:
+                  host: ${{ secrets.SERVER_IP }}
+                  username: ${{ secrets.SERVER_USER }}
+                  key: ${{ secrets.SSH_PRIVATE_KEY }}
+                  script: |
+                      cd ~/citadel
+                      docker compose pull
+                      docker compose up -d
+                      docker image prune -f
